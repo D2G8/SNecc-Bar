@@ -285,7 +285,7 @@ export default function VendingMachine() {
             } as React.CSSProperties
           }
         >
-          <img src={animProduct.image || "/placeholder.svg"} alt="Product" className="w-16 h-16 object-contain" />
+          <img src={animProduct.image || "/logonecc.png"} alt="Product" className="w-16 h-16 object-contain" />
         </div>
       ))}
 
