@@ -21,19 +21,19 @@ const products = [
   {
     id: "A1",
     name: "Twix",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-ekKeV9LUJF20fmKr2Lerdoo002yXPM.png",
+    image: "twix.png",
     price: 0.7,
   },
   {
     id: "A2",
     name: "M&Ms",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-SuD8LLoNWlLXHkeyLzbZ6QRwWxlPhQ.png",
+    image: "m&ms.png",
     price: 0.7,
   },
   {
     id: "A3",
     name: "Maltesers",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-RAHNVSRsIjgD9Tb1K1qTiy5AgUAcUq.png",
+    image: "maltesers.png",
     price: 0.7,
   },
   {
@@ -45,23 +45,23 @@ const products = [
   {
     id: "A5",
     name: "Monster Energy",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-LRmHB3X62ljtxxExl9qV9yOfSRnI84.png",
+    image: "/monster.png",
     price: 1.5,
   },
-  { id: "A6", name: "Coffee", image: "/coffee-cup.jpg", price: 0.3 },
+  { id: "A6", name: "Coffee", image: "/coffeepixel.png", price: 0.3 },
   {
     id: "A7",
     name: "Water",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-h0FCjCZA2Lvku1f6RTJVNkcfhZlWi0.png",
+    image: "/waterpixel.png",
     price: 0.2,
   },
   {
     id: "A8",
     name: "Coca Cola",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-X86Wh0mb2uWux4vCSUrOEZ669osUbI.png",
+    image: "/cokepixel.png",
     price: 0.8,
   },
-  { id: "A9", name: "Coke Zero", image: "/coke-zero-can.jpg", price: 0.8 },
+  { id: "A9", name: "Coke Zero", image: "/cokezeropixel.png", price: 0.8 },
 ]
 
 type CartItem = {
