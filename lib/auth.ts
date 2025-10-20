@@ -22,11 +22,19 @@ export interface Transaction {
   timestamp: string
 }
 
+export interface Product {
+  id: string
+  name: string
+  price: number
+  stock: number
+}
+
 const USERS_KEY = "vending_users"
 const TRANSACTIONS_KEY = "vending_transactions"
 const CURRENT_USER_KEY = "vending_current_user"
+const PRODUCTS_KEY = "vending_products"
 
-// Initialize with default admin user
+// Initialize with default admin user and products
 export function initializeAuth() {
   const users = getUsers()
   if (users.length === 0) {
@@ -40,6 +48,21 @@ export function initializeAuth() {
       createdAt: new Date().toISOString(),
     }
     saveUsers([adminUser])
+  }
+
+  const products = getProducts()
+  if (products.length === 0) {
+    const defaultProducts: Product[] = [
+      { id: "1", name: "Coffee", price: 1.50, stock: 10 },
+      { id: "2", name: "Coke", price: 2.00, stock: 15 },
+      { id: "3", name: "Coke Zero", price: 2.00, stock: 12 },
+      { id: "4", name: "Water", price: 1.00, stock: 20 },
+      { id: "5", name: "M&Ms", price: 1.80, stock: 8 },
+      { id: "6", name: "Twix", price: 1.80, stock: 6 },
+      { id: "7", name: "Maltesers", price: 1.80, stock: 9 },
+      { id: "8", name: "Monster", price: 2.50, stock: 5 },
+    ]
+    saveProducts(defaultProducts)
   }
 }
 
@@ -133,4 +156,24 @@ export function addTransaction(transaction: Omit<Transaction, "id" | "timestamp"
     timestamp: new Date().toISOString(),
   }
   localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify([...transactions, newTransaction]))
+}
+
+export function getProducts(): Product[] {
+  if (typeof window === "undefined") return []
+  const products = localStorage.getItem(PRODUCTS_KEY)
+  return products ? JSON.parse(products) : []
+}
+
+export function saveProducts(products: Product[]) {
+  if (typeof window === "undefined") return
+  localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products))
+}
+
+export function updateProductStock(productId: string, newStock: number) {
+  const products = getProducts()
+  const productIndex = products.findIndex((p) => p.id === productId)
+  if (productIndex !== -1) {
+    products[productIndex].stock = newStock
+    saveProducts(products)
+  }
 }

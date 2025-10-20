@@ -12,8 +12,11 @@ import {
   getTransactions,
   updateUserBalance,
   logout,
+  getProducts,
+  updateProductStock,
   type User,
   type Transaction,
+  type Product,
 } from "@/lib/auth"
 import { LogOut, Users, ShoppingCart, Package } from "lucide-react"
 
@@ -21,8 +24,11 @@ export default function AdminPage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [users, setUsers] = useState<User[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [products, setProducts] = useState<Product[]>([])
   const [selectedUserId, setSelectedUserId] = useState<string>("")
   const [balanceAmount, setBalanceAmount] = useState<string>("")
+  const [selectedProductId, setSelectedProductId] = useState<string>("")
+  const [stockAmount, setStockAmount] = useState<string>("")
   const router = useRouter()
 
   useEffect(() => {
@@ -38,6 +44,7 @@ export default function AdminPage() {
   const loadData = () => {
     setUsers(getUsers())
     setTransactions(getTransactions())
+    setProducts(getProducts())
   }
 
   const handleLogout = () => {
@@ -54,6 +61,17 @@ export default function AdminPage() {
     updateUserBalance(selectedUserId, newBalance)
     setBalanceAmount("")
     setSelectedUserId("")
+    loadData()
+  }
+
+  const handleUpdateStock = () => {
+    if (!selectedProductId || !stockAmount) return
+    const newStock = Number.parseInt(stockAmount)
+    if (newStock < 0) return
+
+    updateProductStock(selectedProductId, newStock)
+    setStockAmount("")
+    setSelectedProductId("")
     loadData()
   }
 
@@ -120,6 +138,7 @@ export default function AdminPage() {
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="transactions">Transactions</TabsTrigger>
             <TabsTrigger value="balance">Manage Balance</TabsTrigger>
+            <TabsTrigger value="stock">Stock Management</TabsTrigger>
           </TabsList>
 
           {/* Users Tab */}
@@ -254,6 +273,74 @@ export default function AdminPage() {
                   <Button onClick={handleAddBalance} className="w-full bg-cyan-500 hover:bg-cyan-600">
                     Add Balance
                   </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Stock Management Tab */}
+          <TabsContent value="stock">
+            <Card className="bg-slate-800 border-slate-700">
+              <CardHeader>
+                <CardTitle className="text-white">Stock Management</CardTitle>
+                <CardDescription className="text-slate-400">Update product stock levels</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {/* Products Table */}
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-slate-700">
+                          <th className="text-left py-3 px-4 text-slate-300 font-medium">Product</th>
+                          <th className="text-left py-3 px-4 text-slate-300 font-medium">Price</th>
+                          <th className="text-left py-3 px-4 text-slate-300 font-medium">Current Stock</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {products.map((product) => (
+                          <tr key={product.id} className="border-b border-slate-700/50">
+                            <td className="py-3 px-4 text-white">{product.name}</td>
+                            <td className="py-3 px-4 text-white">€{product.price.toFixed(2)}</td>
+                            <td className="py-3 px-4 text-white">{product.stock}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Update Stock Form */}
+                  <div className="space-y-4 max-w-md">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">Select Product</label>
+                      <select
+                        value={selectedProductId}
+                        onChange={(e) => setSelectedProductId(e.target.value)}
+                        className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-md text-white"
+                      >
+                        <option value="">Choose a product...</option>
+                        {products.map((product) => (
+                          <option key={product.id} value={product.id}>
+                            {product.name} - Current: {product.stock}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">New Stock Level</label>
+                      <Input
+                        type="number"
+                        min="0"
+                        placeholder="0"
+                        value={stockAmount}
+                        onChange={(e) => setStockAmount(e.target.value)}
+                        className="bg-slate-900 border-slate-700 text-white"
+                      />
+                    </div>
+                    <Button onClick={handleUpdateStock} className="w-full bg-cyan-500 hover:bg-cyan-600">
+                      Update Stock
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
