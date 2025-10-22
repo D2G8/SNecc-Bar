@@ -51,18 +51,27 @@ export function initializeAuth() {
   }
 
   const products = getProducts()
+  const defaultProducts: Product[] = [
+    { id: "1", name: "Coffee", price: 1.50, stock: 10 },
+    { id: "2", name: "Coke", price: 2.00, stock: 15 },
+    { id: "3", name: "Coke Zero", price: 2.00, stock: 12 },
+    { id: "4", name: "Water", price: 1.00, stock: 20 },
+    { id: "5", name: "M&Ms", price: 1.80, stock: 8 },
+    { id: "6", name: "Twix", price: 1.80, stock: 6 },
+    { id: "7", name: "Maltesers", price: 1.80, stock: 9 },
+    { id: "8", name: "Monster", price: 2.50, stock: 5 },
+    { id: "9", name: "Napolitanas", price: 1.50, stock: 10 },
+  ]
+
   if (products.length === 0) {
-    const defaultProducts: Product[] = [
-      { id: "1", name: "Coffee", price: 1.50, stock: 10 },
-      { id: "2", name: "Coke", price: 2.00, stock: 15 },
-      { id: "3", name: "Coke Zero", price: 2.00, stock: 12 },
-      { id: "4", name: "Water", price: 1.00, stock: 20 },
-      { id: "5", name: "M&Ms", price: 1.80, stock: 8 },
-      { id: "6", name: "Twix", price: 1.80, stock: 6 },
-      { id: "7", name: "Maltesers", price: 1.80, stock: 9 },
-      { id: "8", name: "Monster", price: 2.50, stock: 5 },
-    ]
     saveProducts(defaultProducts)
+  } else {
+    // Ensure all default products are present, adding any missing ones
+    const existingIds = products.map(p => p.id)
+    const missingProducts = defaultProducts.filter(p => !existingIds.includes(p.id))
+    if (missingProducts.length > 0) {
+      saveProducts([...products, ...missingProducts])
+    }
   }
 }
 
