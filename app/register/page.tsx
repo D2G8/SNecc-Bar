@@ -14,17 +14,26 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("")
   const [name, setName] = useState("")
   const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
+    setLoading(true)
 
-    const user = register(email, password, name)
-    if (user) {
-      router.push("/")
-    } else {
-      setError("Email já existe")
+    try {
+      const user = await register(email, password, name)
+      if (user) {
+        router.push("/")
+      } else {
+        setError("Erro ao criar conta. Email pode já estar em uso.")
+      }
+    } catch (err) {
+      setError("Erro ao registrar. Tente novamente.")
+      console.error("Registration error:", err)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -78,8 +87,8 @@ export default function RegisterPage() {
               />
             </div>
             {error && <p className="text-sm text-red-500 text-center">{error}</p>}
-            <Button type="submit" className="w-full bg-cyan-500 hover:bg-cyan-600">
-              Criar Conta
+            <Button type="submit" className="w-full bg-cyan-500 hover:bg-cyan-600" disabled={loading}>
+              {loading ? "Criando Conta..." : "Criar Conta"}
             </Button>
             <div className="text-center text-sm">
               <span className="text-muted-foreground">Já tem conta? </span>

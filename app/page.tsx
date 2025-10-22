@@ -92,8 +92,11 @@ export default function VendingMachine() {
 
   useEffect(() => {
     initializeAuth()
-    const user = getCurrentUser()
-    setCurrentUser(user)
+    const checkUser = async () => {
+      const user = await getCurrentUser()
+      setCurrentUser(user)
+    }
+    checkUser()
   }, [])
 
   const handleLogin = () => {
@@ -173,7 +176,7 @@ export default function VendingMachine() {
     setIsCheckoutPageOpen(true)
   }
 
-  const completePurchase = () => {
+  const completePurchase = async () => {
     if (!currentUser) {
       alert("Por favor, faça login para completar a compra")
       return
@@ -183,9 +186,9 @@ export default function VendingMachine() {
 
     if (currentUser.balance >= total) {
       const newBalance = currentUser.balance - total
-      updateUserBalance(currentUser.id, newBalance)
+      await updateUserBalance(currentUser.id, newBalance)
 
-      addTransaction({
+      await addTransaction({
         userId: currentUser.id,
         items: cart.map((item) => ({
           name: item.product.name,
@@ -311,7 +314,10 @@ export default function VendingMachine() {
               </div>
               <div>
                 <p className="font-semibold text-neutral-800 text-lg">{currentUser?.name || "Guest"}</p>
-                <p className="text-cyan-500 font-medium">Balance: €{currentUser?.balance.toFixed(2) || "0.00"}</p>
+                <p className="text-cyan-500 font-medium">
+  Balance: €{currentUser?.balance !== undefined ? currentUser.balance.toFixed(2) : "0.00"}
+</p>
+
               </div>
             </div>
 

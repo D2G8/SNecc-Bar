@@ -26,18 +26,23 @@ export default function AdminPage() {
   const router = useRouter()
 
   useEffect(() => {
-    const user = getCurrentUser()
-    if (!user || user.role !== "admin") {
-      router.push("/login")
-      return
+    const checkUser = async () => {
+      const user = await getCurrentUser()
+      if (!user || user.role !== "admin") {
+        router.push("/login")
+        return
+      }
+      setCurrentUser(user)
+      await loadData()
     }
-    setCurrentUser(user)
-    loadData()
+    checkUser()
   }, [router])
 
-  const loadData = () => {
-    setUsers(getUsers())
-    setTransactions(getTransactions())
+  const loadData = async () => {
+    const usersData = await getUsers()
+    setUsers(usersData)
+    const transactionsData = await getTransactions()
+    setTransactions(transactionsData)
   }
 
   const handleLogout = () => {
@@ -45,16 +50,16 @@ export default function AdminPage() {
     router.push("/login")
   }
 
-  const handleAddBalance = () => {
+  const handleAddBalance = async () => {
     if (!selectedUserId || !balanceAmount) return
     const user = users.find((u) => u.id === selectedUserId)
     if (!user) return
 
     const newBalance = user.balance + Number.parseFloat(balanceAmount)
-    updateUserBalance(selectedUserId, newBalance)
+    await updateUserBalance(selectedUserId, newBalance)
     setBalanceAmount("")
     setSelectedUserId("")
-    loadData()
+    await loadData()
   }
 
   const totalRevenue = transactions.reduce((sum, t) => sum + t.total, 0)

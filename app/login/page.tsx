@@ -13,25 +13,34 @@ export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
     initializeAuth()
   }, [])
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
+    setLoading(true)
 
-    const user = login(email, password)
-    if (user) {
-      if (user.role === "admin") {
-        router.push("/admin")
+    try {
+      const user = await login(email, password)
+      if (user) {
+        if (user.role === "admin") {
+          router.push("/admin")
+        } else {
+          router.push("/")
+        }
       } else {
-        router.push("/")
+        setError("Email ou senha inválidos")
       }
-    } else {
-      setError("Email ou senha inválidos")
+    } catch (err) {
+      setError("Erro ao fazer login. Tente novamente.")
+      console.error("Login error:", err)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -71,8 +80,8 @@ export default function LoginPage() {
               />
             </div>
             {error && <p className="text-sm text-red-500 text-center">{error}</p>}
-            <Button type="submit" className="w-full bg-cyan-500 hover:bg-cyan-600">
-              Entrar
+            <Button type="submit" className="w-full bg-cyan-500 hover:bg-cyan-600" disabled={loading}>
+              {loading ? "Entrando..." : "Entrar"}
             </Button>
             <div className="text-center text-sm">
               <span className="text-muted-foreground">Não tem conta? </span>
