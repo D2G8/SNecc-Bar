@@ -21,19 +21,19 @@ const products = [
   {
     id: "A1",
     name: "Twix",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-ekKeV9LUJF20fmKr2Lerdoo002yXPM.png",
+    image: "twix.png",
     price: 0.7,
   },
   {
     id: "A2",
     name: "M&Ms",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-SuD8LLoNWlLXHkeyLzbZ6QRwWxlPhQ.png",
+    image: "m&ms.png",
     price: 0.7,
   },
   {
     id: "A3",
     name: "Maltesers",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-RAHNVSRsIjgD9Tb1K1qTiy5AgUAcUq.png",
+    image: "maltesers.png",
     price: 0.7,
   },
   {
@@ -45,23 +45,23 @@ const products = [
   {
     id: "A5",
     name: "Monster Energy",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-LRmHB3X62ljtxxExl9qV9yOfSRnI84.png",
+    image: "/monster.png",
     price: 1.5,
   },
-  { id: "A6", name: "Coffee", image: "/coffee-cup.jpg", price: 0.3 },
+  { id: "A6", name: "Coffee", image: "/coffeepixel.png", price: 0.3 },
   {
     id: "A7",
     name: "Water",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-h0FCjCZA2Lvku1f6RTJVNkcfhZlWi0.png",
+    image: "/waterpixel.png",
     price: 0.2,
   },
   {
     id: "A8",
     name: "Coca Cola",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-X86Wh0mb2uWux4vCSUrOEZ669osUbI.png",
+    image: "/cokepixel.png",
     price: 0.8,
   },
-  { id: "A9", name: "Coke Zero", image: "/coke-zero-can.jpg", price: 0.8 },
+  { id: "A9", name: "Coke Zero", image: "/cokezeropixel.png", price: 0.8 },
 ]
 
 type CartItem = {
@@ -219,8 +219,8 @@ export default function VendingMachine() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-200 p-8 flex items-center justify-center relative">
-      <Card className="bg-cyan-500 p-8 rounded-3xl shadow-2xl max-w-2xl">
+    <div className="min-h-screen bg-neutral-200 p-4 sm:p-8 flex items-center justify-center relative">
+      <Card className="bg-cyan-500 p-4 sm:p-8 rounded-3xl shadow-2xl max-w-2xl w-full">
         <div className="bg-neutral-900 rounded-2xl p-4 mb-6 flex items-center justify-between">
           <h1 className="text-cyan-400 text-xl font-semibold">Bem vindo ao SNecc-Bar</h1>
           <div className="bg-white rounded-lg p-2">
@@ -228,13 +228,13 @@ export default function VendingMachine() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-8">
-          <div className="grid grid-cols-3 gap-6">
+        <div className="bg-white rounded-2xl p-4 sm:p-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
             {products.map((product) => (
               <div key={product.id} className="flex flex-col items-center">
                 <button
                   onClick={(e) => handleProductClick(product, e)}
-                  className="border-4 border-neutral-300 rounded-xl p-4 bg-white w-32 h-32 flex items-center justify-center mb-2 hover:border-cyan-400 hover:shadow-lg transition-all cursor-pointer active:scale-95"
+                  className="border-4 border-neutral-300 rounded-xl p-2 sm:p-4 bg-white w-24 h-24 sm:w-32 sm:h-32 flex items-center justify-center mb-2 hover:border-cyan-400 hover:shadow-lg transition-all cursor-pointer active:scale-95"
                 >
                   <img
                     src={product.image || "/placeholder.svg"}
@@ -296,7 +296,7 @@ export default function VendingMachine() {
         <>
           <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setIsPopupOpen(false)} />
 
-          <Card className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-3xl shadow-2xl w-96 z-50">
+          <Card className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-4 sm:p-8 rounded-3xl shadow-2xl w-full max-w-md z-50">
             <Button
               variant="ghost"
               size="icon"
@@ -362,7 +362,7 @@ export default function VendingMachine() {
         <>
           <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setIsCheckoutOpen(false)} />
 
-          <Card className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-3xl shadow-2xl w-[500px] max-h-[80vh] overflow-y-auto z-50">
+          <Card className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-4 sm:p-8 rounded-3xl shadow-2xl w-full max-w-md sm:w-[500px] max-h-[80vh] overflow-y-auto z-50">
             <Button
               variant="ghost"
               size="icon"
@@ -459,7 +459,7 @@ export default function VendingMachine() {
         <>
           <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setIsCheckoutPageOpen(false)} />
 
-          <Card className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-3xl shadow-2xl w-[500px] z-50">
+          <Card className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-4 sm:p-8 rounded-3xl shadow-2xl w-full max-w-md sm:w-[500px] z-50">
             <Button
               variant="ghost"
               size="icon"
