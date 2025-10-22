@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { LogOut, Users, ShoppingCart, Package } from "lucide-react"
-import { supabase } from "@/lib/supabaseClient"
-import { getUsers, getTransactions, getProducts, updateUserBalance, updateProductStock } from "@/lib/auth"
+import { getCurrentUser, getUsers, getTransactions, getProducts, updateUserBalance, updateProductStock, logout } from "@/lib/auth"
 
 type User = {
   id: string
@@ -48,38 +47,15 @@ export default function AdminPage() {
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession()
-      if (error) {
-        console.error("Error fetching session:", error)
+      const user = await getCurrentUser()
+      if (!user || user.role !== "admin") {
         router.push("/login")
         return
       }
-
-      if (!session || session.user.email !== "admin@necc.com") {
-        router.push("/login")
-        return
-      }
-
-      setCurrentUser({
-        id: session.user.id,
-        email: session.user.email,
-        name: session.user.user_metadata?.full_name || session.user.email,
-        role: "admin",
-        balance: 0,
-        isNeccMember: false,
-      })
-
+      setCurrentUser(user)
       loadData()
     }
-
     checkUser()
-
-    // Optional: real-time session tracking
-    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!session) router.push("/login")
-    })
-
-    return () => listener.subscription.unsubscribe()
   }, [router])
 
   const loadData = () => {
@@ -89,9 +65,8 @@ export default function AdminPage() {
     setProducts(getProducts())
   }
 
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut()
-    if (error) console.error("Logout error:", error.message)
+  const handleLogout = () => {
+    logout()
     router.push("/login")
   }
 
