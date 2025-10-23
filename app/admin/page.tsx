@@ -58,9 +58,10 @@ export default function AdminPage() {
     checkUser()
   }, [router])
 
-  const loadData = () => {
+  const loadData = async () => {
     // Replace these with your actual data fetching functions
-    setUsers(getUsers())
+    const usersData = await getUsers()
+    setUsers(usersData)
     setTransactions(getTransactions())
     setProducts(getProducts())
   }

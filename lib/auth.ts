@@ -1,3 +1,5 @@
+import { supabase } from '@/app/config/supabaseClient'
+
 export interface User {
   id: string
   email: string
@@ -29,27 +31,11 @@ export interface Product {
   stock: number
 }
 
-const USERS_KEY = "vending_users"
 const TRANSACTIONS_KEY = "vending_transactions"
-const CURRENT_USER_KEY = "vending_current_user"
 const PRODUCTS_KEY = "vending_products"
 
-// Initialize with default admin user and products
+// Initialize products only
 export function initializeAuth() {
-  const users = getUsers()
-  if (users.length === 0) {
-    const adminUser: User = {
-      id: "1",
-      email: "admin@necc.com",
-      name: "Admin",
-      balance: 1000,
-      role: "admin",
-      isNeccMember: true,
-      createdAt: new Date().toISOString(),
-    }
-    saveUsers([adminUser])
-  }
-
   const products = getProducts()
   const defaultProducts: Product[] = [
     { id: "1", name: "Coffee", price: 1.50, stock: 10 },
@@ -75,79 +61,101 @@ export function initializeAuth() {
   }
 }
 
-export function getUsers(): User[] {
-  if (typeof window === "undefined") return []
-  const users = localStorage.getItem(USERS_KEY)
-  return users ? JSON.parse(users) : []
-}
-
-export function saveUsers(users: User[]) {
-  if (typeof window === "undefined") return
-  localStorage.setItem(USERS_KEY, JSON.stringify(users))
-}
-
-export function getCurrentUser(): User | null {
-  if (typeof window === "undefined") return null
-  const userId = localStorage.getItem(CURRENT_USER_KEY)
-  if (!userId) return null
-  const users = getUsers()
-  return users.find((u) => u.id === userId) || null
-}
-
-export function setCurrentUser(userId: string | null) {
-  if (typeof window === "undefined") return
-  if (userId) {
-    localStorage.setItem(CURRENT_USER_KEY, userId)
-  } else {
-    localStorage.removeItem(CURRENT_USER_KEY)
-  }
-}
-
-export function login(email: string, password: string): User | null {
-  const users = getUsers()
-  // Simple password check: password is "password" for all users, or "admin" for admin
-  const user = users.find((u) => u.email === email)
+export async function getCurrentUser(): Promise<User | null> {
+  const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
 
-  const validPassword = user.role === "admin" ? password === "admin" : password === "password"
-  if (!validPassword) return null
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('id', user.id)
+    .single()
 
-  setCurrentUser(user.id)
-  return user
+  if (error || !data) return null
+
+  return {
+    id: data.id,
+    email: data.email,
+    name: data.name,
+    balance: data.balance,
+    role: data.role,
+    isNeccMember: data.is_necc_member,
+    createdAt: data.created_at,
+  }
 }
 
-export function register(email: string, password: string, name: string): User | null {
-  const users = getUsers()
-  if (users.find((u) => u.email === email)) {
-    return null // Email already exists
+export async function login(email: string, password: string): Promise<User | null> {
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+  if (error) {
+    console.error('Login error:', error)
+    return null
   }
 
-  const newUser: User = {
-    id: Date.now().toString(),
-    email,
-    name,
-    balance: 0,
-    role: "user",
-    isNeccMember: false,
-    createdAt: new Date().toISOString(),
-  }
-
-  saveUsers([...users, newUser])
-  setCurrentUser(newUser.id)
-  return newUser
+  return await getCurrentUser()
 }
 
-export function logout() {
-  setCurrentUser(null)
+export async function register(email: string, password: string, name: string): Promise<User | null> {
+  const { data, error } = await supabase.auth.signUp({ email, password })
+  if (error) {
+    console.error('Sign up error:', error)
+    return null
+  }
+
+  if (!data.user) return null
+
+  // Determine role based on email
+  const role = email === 'admin@necc.com' ? 'admin' : 'user'
+  const balance = role === 'admin' ? 1000 : 0
+
+  // Insert into users table
+  const { error: insertError } = await supabase
+    .from('users')
+    .insert([{
+      id: data.user.id,
+      email,
+      name,
+      balance,
+      role,
+      is_necc_member: false,
+    }])
+
+  if (insertError) {
+    console.error('Insert user error:', insertError)
+    return null
+  }
+
+  return await getCurrentUser()
 }
 
-export function updateUserBalance(userId: string, newBalance: number) {
-  const users = getUsers()
-  const userIndex = users.findIndex((u) => u.id === userId)
-  if (userIndex !== -1) {
-    users[userIndex].balance = newBalance
-    saveUsers(users)
+export async function logout() {
+  const { error } = await supabase.auth.signOut()
+  if (error) console.error('Logout error:', error)
+}
+
+export async function getUsers(): Promise<User[]> {
+  const { data, error } = await supabase.from('users').select('*')
+  if (error) {
+    console.error('Get users error:', error)
+    return []
   }
+  return data.map(user => ({
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    balance: user.balance,
+    role: user.role,
+    isNeccMember: user.is_necc_member,
+    createdAt: user.created_at,
+  }))
+}
+
+export async function updateUserBalance(userId: string, newBalance: number) {
+  const { error } = await supabase
+    .from('users')
+    .update({ balance: newBalance })
+    .eq('id', userId)
+
+  if (error) console.error('Update balance error:', error)
 }
 
 export function getTransactions(): Transaction[] {
