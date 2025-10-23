@@ -89,8 +89,9 @@ export async function login(email: string, password: string): Promise<User | nul
     email,
     password,
   })
+
   if (error) {
-    console.error('Login failed:', error.message)
+    console.error(error.message)
     return null
   }
 
@@ -144,6 +145,7 @@ export async function register(email: string, password: string, name: string): P
 export async function logout() {
   const { error } = await supabase.auth.signOut()
   if (error) console.error('Logout error:', error)
+  // clears session
 }
 
 export async function getUsers(): Promise<User[]> {
