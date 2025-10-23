@@ -103,6 +103,17 @@ export async function login(email: string, password: string): Promise<User | nul
   return await getCurrentUser()
 }
 
+export async function freshLogin(email: string, password: string) {
+  // Clear old session
+  await supabase.auth.signOut()
+
+  // Log in fresh
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+  if (error) throw new Error(error.message)
+
+  return data.user
+}
+
 export async function register(email: string, password: string, name: string): Promise<User | null> {
   const { data, error } = await supabase.auth.signUp({
     email,
