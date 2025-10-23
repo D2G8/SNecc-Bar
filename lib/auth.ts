@@ -85,38 +85,43 @@ export async function getCurrentUser(): Promise<User | null> {
 }
 
 export async function login(email: string, password: string): Promise<User | null> {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  })
   if (error) {
-    console.error('Login error:', error)
+    console.error('Login failed:', error.message)
     return null
   }
 
+  console.log('Logged in:', data.user)
   return await getCurrentUser()
 }
 
 export async function register(email: string, password: string, name: string): Promise<User | null> {
-  console.log('Attempting to register:', email)
-  const { data, error } = await supabase.auth.signUp({ email, password })
-  console.log('signup data', data, 'error', error)
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+  })
+
   if (error) {
-    console.error('Sign up error:', error)
+    console.error('Signup error:', error.message)
     return null
   }
 
   if (!data.user) {
-    console.error('data.user is null - signup didn’t complete')
+    console.error('data.user is null - signup didn\'t complete')
     return null
   }
 
-  console.log('data.user.id:', data.user.id)
+  console.log('User created:', data.user)
 
   // Determine role based on email
   const role = email === 'admin@necc.com' ? 'admin' : 'user'
   const balance = role === 'admin' ? 1000 : 0
 
-  console.log('Inserting user profile:', { id: data.user.id, email, name, balance, role })
   // Insert into users table
-  const { data: rowData, error: insertError } = await supabase
+  const { error: insertError } = await supabase
     .from('users')
     .insert([{
       id: data.user.id,
@@ -127,9 +132,8 @@ export async function register(email: string, password: string, name: string): P
       is_necc_member: false,
     }])
 
-  console.log('Insert result:', rowData, 'Insert error:', insertError)
   if (insertError) {
-    console.error('Insert user error:', insertError)
+    console.error('Insert user profile error:', insertError.message)
     return null
   }
 
