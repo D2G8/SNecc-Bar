@@ -95,18 +95,24 @@ export async function login(email: string, password: string): Promise<User | nul
 }
 
 export async function register(email: string, password: string, name: string): Promise<User | null> {
+  console.log('Attempting to register:', email)
   const { data, error } = await supabase.auth.signUp({ email, password })
+  console.log('Sign up result:', data, error)
   if (error) {
     console.error('Sign up error:', error)
     return null
   }
 
-  if (!data.user) return null
+  if (!data.user) {
+    console.error('No user data returned from signUp')
+    return null
+  }
 
   // Determine role based on email
   const role = email === 'admin@necc.com' ? 'admin' : 'user'
   const balance = role === 'admin' ? 1000 : 0
 
+  console.log('Inserting user profile:', { id: data.user.id, email, name, balance, role })
   // Insert into users table
   const { error: insertError } = await supabase
     .from('users')
@@ -124,6 +130,7 @@ export async function register(email: string, password: string, name: string): P
     return null
   }
 
+  console.log('Registration successful')
   return await getCurrentUser()
 }
 
