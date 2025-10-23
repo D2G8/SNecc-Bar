@@ -97,16 +97,18 @@ export async function login(email: string, password: string): Promise<User | nul
 export async function register(email: string, password: string, name: string): Promise<User | null> {
   console.log('Attempting to register:', email)
   const { data, error } = await supabase.auth.signUp({ email, password })
-  console.log('Sign up result:', data, error)
+  console.log('signup data', data, 'error', error)
   if (error) {
     console.error('Sign up error:', error)
     return null
   }
 
   if (!data.user) {
-    console.error('No user data returned from signUp')
+    console.error('data.user is null - signup didn’t complete')
     return null
   }
+
+  console.log('data.user.id:', data.user.id)
 
   // Determine role based on email
   const role = email === 'admin@necc.com' ? 'admin' : 'user'
