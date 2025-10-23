@@ -116,7 +116,7 @@ export async function register(email: string, password: string, name: string): P
 
   console.log('Inserting user profile:', { id: data.user.id, email, name, balance, role })
   // Insert into users table
-  const { error: insertError } = await supabase
+  const { data: rowData, error: insertError } = await supabase
     .from('users')
     .insert([{
       id: data.user.id,
@@ -127,6 +127,7 @@ export async function register(email: string, password: string, name: string): P
       is_necc_member: false,
     }])
 
+  console.log('Insert result:', rowData, 'Insert error:', insertError)
   if (insertError) {
     console.error('Insert user error:', insertError)
     return null
