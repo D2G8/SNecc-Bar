@@ -132,14 +132,23 @@ export async function register(email: string, password: string, name: string): P
 
   await supabase.from('users').insert({
     id: user.id,
-    email: user.email,
+    email,
     name,
     balance,
     role,
     is_necc_member: false,
   })
 
-  return await getCurrentUser()
+  // Return the user object since signUp doesn't create a session
+  return {
+    id: user.id,
+    email,
+    name,
+    balance,
+    role,
+    isNeccMember: false,
+    createdAt: new Date().toISOString(),
+  }
 }
 
 export async function logout() {
