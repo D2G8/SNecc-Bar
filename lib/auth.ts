@@ -124,6 +124,7 @@ export async function register(email: string, password: string, name: string): P
 
   // Only then, and only if needed:
   const { user } = data
+  if (!user) throw new Error('User creation failed')
 
   // Determine role based on email
   const role = email === 'admin@necc.com' ? 'admin' : 'user'
