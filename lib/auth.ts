@@ -117,43 +117,27 @@ export async function freshLogin(email: string, password: string) {
 export async function register(email: string, password: string, name: string): Promise<User | null> {
   const { data, error } = await supabase.auth.signUp({
     email,
-    password,
+    password
   })
 
-  if (error) {
-    console.error('Signup error:', error.message)
-    return null
-  }
+  if (error) throw error
 
-  if (!data.user) {
-    console.error('data.user is null - signup didn\'t complete')
-    return null
-  }
-
-  console.log('User created:', data.user)
+  // Only then, and only if needed:
+  const { user } = data
 
   // Determine role based on email
   const role = email === 'admin@necc.com' ? 'admin' : 'user'
   const balance = role === 'admin' ? 1000 : 0
 
-  // Insert into users table
-  const { error: insertError } = await supabase
-    .from('users')
-    .insert([{
-      id: data.user.id,
-      email,
-      name,
-      balance,
-      role,
-      is_necc_member: false,
-    }])
+  await supabase.from('users').insert({
+    id: user.id,
+    email: user.email,
+    name,
+    balance,
+    role,
+    is_necc_member: false,
+  })
 
-  if (insertError) {
-    console.error('Insert user profile error:', insertError.message)
-    return null
-  }
-
-  console.log('Registration successful')
   return await getCurrentUser()
 }
 
