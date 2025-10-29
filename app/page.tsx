@@ -103,7 +103,7 @@ export default function VendingMachine() {
     // Load products from localStorage
     const storedProducts = getProducts()
     if (storedProducts.length > 0) {
-      setDynamicProducts(storedProducts.map(p => ({
+      setDynamicProducts(storedProducts.filter(p => p.stock > 0).map(p => ({
         id: p.id,
         name: p.name,
         image: p.name.toLowerCase().replace(/\s+/g, '') + '.png', // Simple mapping
