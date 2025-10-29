@@ -45,19 +45,24 @@ export function initializeAuth() {
     { id: "5", name: "M&Ms", price: 0.7, stock: 8 },
     { id: "6", name: "Twix", price: 0.7, stock: 6 },
     { id: "7", name: "Maltesers", price: 0.7, stock: 9 },
-    { id: "8", name: "Monster Energy", price: 1.5, stock: 5 },
+    { id: "8", name: "Monster Energy", price: 1.4, stock: 5 },
     { id: "9", name: "Napolitanas", price: 0.3, stock: 10 },
   ]
 
   if (products.length === 0) {
     saveProducts(defaultProducts)
   } else {
-    // Ensure all default products are present, adding any missing ones
-    const existingIds = products.map(p => p.id)
+    // Update existing products with correct prices and add missing ones
+    const updatedProducts = products.map(existingProduct => {
+      const defaultProduct = defaultProducts.find(dp => dp.id === existingProduct.id)
+      if (defaultProduct) {
+        return { ...existingProduct, price: defaultProduct.price, name: defaultProduct.name }
+      }
+      return existingProduct
+    })
+    const existingIds = updatedProducts.map(p => p.id)
     const missingProducts = defaultProducts.filter(p => !existingIds.includes(p.id))
-    if (missingProducts.length > 0) {
-      saveProducts([...products, ...missingProducts])
-    }
+    saveProducts([...updatedProducts, ...missingProducts])
   }
 }
 
