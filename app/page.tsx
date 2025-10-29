@@ -96,7 +96,7 @@ export default function VendingMachine() {
   const [isForSomeoneElse, setIsForSomeoneElse] = useState(false)
   const [isNeccMember, setIsNeccMember] = useState(false)
   const [animatingProducts, setAnimatingProducts] = useState<AnimatingProduct[]>([])
-  const [dynamicProducts, setDynamicProducts] = useState<DynamicProduct[]>(products)
+  const [dynamicProducts, setDynamicProducts] = useState<DynamicProduct[]>(products.map(p => ({ ...p, stock: 10 })))
   const cartButtonRef = useRef<HTMLButtonElement>(null)
   const router = useRouter()
 
@@ -111,10 +111,21 @@ export default function VendingMachine() {
     // Load products from localStorage
     const storedProducts = getProducts()
     if (storedProducts.length > 0) {
+      const imageMap: { [key: string]: string } = {
+        "Coffee": "/coffeepixel.png",
+        "Coca Cola": "/cokepixel.png",
+        "Coke Zero": "/cokezeropixel.png",
+        "Water": "/waterpixel.png",
+        "M&Ms": "m&ms.png",
+        "Twix": "twix.png",
+        "Maltesers": "maltesers.png",
+        "Monster Energy": "/monster.png",
+        "Napolitanas": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-SIIxVdNrpGWkis71cZq6FgdQDdsTEE.png",
+      }
       setDynamicProducts(storedProducts.map(p => ({
         id: p.id,
         name: p.name,
-        image: p.name.toLowerCase().replace(/\s+/g, '') + '.png', // Simple mapping
+        image: imageMap[p.name] || p.name.toLowerCase().replace(/\s+/g, '') + '.png',
         price: p.price,
         stock: p.stock,
       })))
