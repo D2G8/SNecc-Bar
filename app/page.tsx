@@ -107,8 +107,10 @@ export default function VendingMachine() {
       setCurrentUser(user)
     }
     checkUser()
+  }, [])
 
-    // Load products from localStorage
+  useEffect(() => {
+    // Load products from localStorage and adjust prices based on membership
     const storedProducts = getProducts()
     if (storedProducts.length > 0) {
       const imageMap: { [key: string]: string } = {
@@ -122,15 +124,30 @@ export default function VendingMachine() {
         "Monster Energy": "/monster.png",
         "Napolitanas": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-SIIxVdNrpGWkis71cZq6FgdQDdsTEE.png",
       }
+
+      const nonMemberPrices: { [key: string]: number } = {
+        "Water": 0.3,
+        "Coffee": 0.4,
+        "Napolitanas": 0.4,
+        "Maltesers": 0.8,
+        "Twix": 0.8,
+        "M&Ms": 0.8,
+        "Coca Cola": 0.9,
+        "Coke Zero": 0.9,
+        "Monster Energy": 1.6,
+      }
+
+      const isNeccMember = currentUser?.isNeccMember ?? true // Default to member prices for non-logged in
+
       setDynamicProducts(storedProducts.map(p => ({
         id: p.id,
         name: p.name,
         image: imageMap[p.name] || p.name.toLowerCase().replace(/\s+/g, '') + '.png',
-        price: p.price,
+        price: isNeccMember ? p.price : (nonMemberPrices[p.name] || p.price),
         stock: p.stock,
       })))
     }
-  }, [])
+  }, [currentUser])
 
   const handleLogin = () => {
     setIsPopupOpen(false)
