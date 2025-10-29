@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
-import GooglePayScript from '../components/GooglePayScript'
+import ConditionalGooglePayScript from '../components/ConditionalGooglePayScript'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -24,8 +24,8 @@ export default function RootLayout({
         <title>SNecc Bar</title>
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <GooglePayScript />
       <body className={`font-sans antialiased`}>
+        <ConditionalGooglePayScript />
         {children}
         <Analytics />
       </body>

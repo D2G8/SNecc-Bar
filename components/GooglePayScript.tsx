@@ -13,7 +13,7 @@ export default function GooglePayScript({ showButton = false }: GooglePayScriptP
   useEffect(() => {
     const initGooglePay = () => {
       if (typeof window !== 'undefined' && (window as any).google?.payments?.api) {
-        const googlePayClient = new (window as any).google.payments.api.PaymentsClient({ environment: 'TEST' });
+        const googlePayClient = new (window as any).google.payments.api.PaymentsClient({ environment: 'Production' });
         const cardPaymentMethod = {
           type: 'CARD',
           parameters: {
