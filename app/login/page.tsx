@@ -89,9 +89,6 @@ export default function LoginPage() {
                 Registrar
               </button>
             </div>
-            <div className="text-center text-xs text-muted-foreground mt-4">
-              <p>Demo: admins@necc.com / admin</p>
-            </div>
           </form>
         </CardContent>
       </Card>
