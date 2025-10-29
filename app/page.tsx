@@ -6,7 +6,7 @@ import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { User, X, ShoppingCart, Trash2 } from "lucide-react"
+import { User, X, ShoppingCart, Trash2, XCircle } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   getCurrentUser,
@@ -79,6 +79,14 @@ type AnimatingProduct = {
   endY: number
 }
 
+type DynamicProduct = {
+  id: string
+  name: string
+  image: string
+  price: number
+  stock: number
+}
+
 export default function VendingMachine() {
   const [currentUser, setCurrentUser] = useState<UserType | null>(null)
   const [isPopupOpen, setIsPopupOpen] = useState(false)
@@ -88,7 +96,7 @@ export default function VendingMachine() {
   const [isForSomeoneElse, setIsForSomeoneElse] = useState(false)
   const [isNeccMember, setIsNeccMember] = useState(false)
   const [animatingProducts, setAnimatingProducts] = useState<AnimatingProduct[]>([])
-  const [dynamicProducts, setDynamicProducts] = useState(products)
+  const [dynamicProducts, setDynamicProducts] = useState<DynamicProduct[]>(products)
   const cartButtonRef = useRef<HTMLButtonElement>(null)
   const router = useRouter()
 
@@ -103,11 +111,12 @@ export default function VendingMachine() {
     // Load products from localStorage
     const storedProducts = getProducts()
     if (storedProducts.length > 0) {
-      setDynamicProducts(storedProducts.filter(p => p.stock > 0).map(p => ({
+      setDynamicProducts(storedProducts.map(p => ({
         id: p.id,
         name: p.name,
         image: p.name.toLowerCase().replace(/\s+/g, '') + '.png', // Simple mapping
         price: p.price,
+        stock: p.stock,
       })))
     }
   }, [])
@@ -247,13 +256,23 @@ export default function VendingMachine() {
               <div key={product.id} className="flex flex-col items-center">
                 <button
                   onClick={(e) => handleProductClick(product, e)}
-                  className="border-4 border-neutral-300 rounded-xl p-2 sm:p-4 bg-white w-24 h-24 sm:w-32 sm:h-32 flex items-center justify-center mb-2 hover:border-cyan-400 hover:shadow-lg transition-all cursor-pointer active:scale-95"
+                  className={`border-4 border-neutral-300 rounded-xl p-2 sm:p-4 bg-white w-24 h-24 sm:w-32 sm:h-32 flex items-center justify-center mb-2 hover:border-cyan-400 hover:shadow-lg transition-all cursor-pointer active:scale-95 ${
+                    product.stock <= 0 ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                  disabled={product.stock <= 0}
                 >
-                  <img
-                    src={product.image || "/placeholder.svg"}
-                    alt={product.name}
-                    className="max-w-full max-h-full object-contain"
-                  />
+                  {product.stock <= 0 ? (
+                    <div className="flex flex-col items-center justify-center">
+                      <XCircle className="w-8 h-8 text-red-500 mb-1" />
+                      <span className="text-xs text-red-500 font-medium">Out of Stock</span>
+                    </div>
+                  ) : (
+                    <img
+                      src={product.image || "/placeholder.svg"}
+                      alt={product.name}
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  )}
                 </button>
                 <span className="text-sm text-cyan-600 font-medium">€{product.price.toFixed(2)}</span>
               </div>
