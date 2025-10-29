@@ -63,4 +63,4 @@ CREATE POLICY "Admins can view all transactions" ON public.transactions
 -- Insert default admin user (you'll need to create this user via auth first)
 -- Note: Replace 'admin-user-id' with the actual UUID from auth.users after creating the admin account
 -- INSERT INTO public.users (id, email, name, balance, role, is_necc_member)
--- VALUES ('admin-user-id', 'admin@necc.com', 'Admin', 1000, 'admin', true);
+-- VALUES ('admin-user-id', 'admins@necc.com', 'Admin', 1000, 'admin', true);
