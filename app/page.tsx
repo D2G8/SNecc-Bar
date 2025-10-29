@@ -14,54 +14,55 @@ import {
   updateUserBalance,
   addTransaction,
   initializeAuth,
+  getProducts,
   type User as UserType,
 } from "@/lib/auth"
 
 const products = [
   {
-    id: "A1",
+    id: "1",
     name: "Twix",
     image: "twix.png",
     price: 0.7,
   },
   {
-    id: "A2",
+    id: "2",
     name: "M&Ms",
     image: "m&ms.png",
     price: 0.7,
   },
   {
-    id: "A3",
+    id: "3",
     name: "Maltesers",
     image: "maltesers.png",
     price: 0.7,
   },
   {
-    id: "A4",
+    id: "4",
     name: "Napolitanas",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-SIIxVdNrpGWkis71cZq6FgdQDdsTEE.png",
     price: 0.3,
   },
   {
-    id: "A5",
+    id: "5",
     name: "Monster Energy",
     image: "/monster.png",
     price: 1.5,
   },
-  { id: "A6", name: "Coffee", image: "/coffeepixel.png", price: 0.3 },
+  { id: "6", name: "Coffee", image: "/coffeepixel.png", price: 0.3 },
   {
-    id: "A7",
+    id: "7",
     name: "Water",
     image: "/waterpixel.png",
     price: 0.2,
   },
   {
-    id: "A8",
+    id: "8",
     name: "Coca Cola",
     image: "/cokepixel.png",
     price: 0.8,
   },
-  { id: "A9", name: "Coke Zero", image: "/cokezeropixel.png", price: 0.8 },
+  { id: "9", name: "Coke Zero", image: "/cokezeropixel.png", price: 0.8 },
 ]
 
 type CartItem = {
@@ -87,6 +88,7 @@ export default function VendingMachine() {
   const [isForSomeoneElse, setIsForSomeoneElse] = useState(false)
   const [isNeccMember, setIsNeccMember] = useState(false)
   const [animatingProducts, setAnimatingProducts] = useState<AnimatingProduct[]>([])
+  const [dynamicProducts, setDynamicProducts] = useState(products)
   const cartButtonRef = useRef<HTMLButtonElement>(null)
   const router = useRouter()
 
@@ -97,6 +99,17 @@ export default function VendingMachine() {
       setCurrentUser(user)
     }
     checkUser()
+
+    // Load products from localStorage
+    const storedProducts = getProducts()
+    if (storedProducts.length > 0) {
+      setDynamicProducts(storedProducts.map(p => ({
+        id: p.id,
+        name: p.name,
+        image: p.name.toLowerCase().replace(/\s+/g, '') + '.png', // Simple mapping
+        price: p.price,
+      })))
+    }
   }, [])
 
   const handleLogin = () => {
@@ -230,7 +243,7 @@ export default function VendingMachine() {
 
         <div className="bg-white rounded-2xl p-4 sm:p-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-            {products.map((product) => (
+            {dynamicProducts.map((product) => (
               <div key={product.id} className="flex flex-col items-center">
                 <button
                   onClick={(e) => handleProductClick(product, e)}
