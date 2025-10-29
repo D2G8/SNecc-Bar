@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { User, X, ShoppingCart, Trash2, XCircle } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
+import GooglePayScript from "@/components/GooglePayScript"
 import {
   getCurrentUser,
   logout,
@@ -582,17 +583,20 @@ export default function VendingMachine() {
               <span className="font-semibold text-neutral-800">€{currentUser?.balance.toFixed(2) || "0.00"}</span>
             </div>
 
-            <Button
-              onClick={completePurchase}
-              className="w-full bg-cyan-500 hover:bg-cyan-600 text-white text-lg py-6"
-              disabled={!currentUser || currentUser.balance < getCartTotal()}
-            >
-              {!currentUser
-                ? "Login Necessário"
-                : currentUser.balance < getCartTotal()
-                  ? "Saldo Insuficiente"
-                  : "Confirmar Compra"}
-            </Button>
+            <div className="space-y-4">
+              <GooglePayScript showButton={true} />
+              <Button
+                onClick={completePurchase}
+                className="w-full bg-cyan-500 hover:bg-cyan-600 text-white text-lg py-6"
+                disabled={!currentUser || currentUser.balance < getCartTotal()}
+              >
+                {!currentUser
+                  ? "Login Necessário"
+                  : currentUser.balance < getCartTotal()
+                    ? "Saldo Insuficiente"
+                    : "Confirmar Compra"}
+              </Button>
+            </div>
           </Card>
         </>
       )}

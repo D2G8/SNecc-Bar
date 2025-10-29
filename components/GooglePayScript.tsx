@@ -1,9 +1,15 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import Script from 'next/script';
 
-export default function GooglePayScript() {
+interface GooglePayScriptProps {
+  showButton?: boolean;
+}
+
+export default function GooglePayScript({ showButton = false }: GooglePayScriptProps) {
+  const buttonContainerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const initGooglePay = () => {
       if (typeof window !== 'undefined' && (window as any).google?.payments?.api) {
@@ -71,7 +77,11 @@ export default function GooglePayScript() {
               buttonType: 'long',
               onClick: onGooglePaymentsButtonClicked
             });
-            document.body.appendChild(button);
+            if (showButton && buttonContainerRef.current) {
+              buttonContainerRef.current.appendChild(button);
+            } else if (!showButton) {
+              document.body.appendChild(button);
+            }
           }
         }).catch(function(err: any){
           console.error('Google Pay error:', err);
@@ -86,14 +96,17 @@ export default function GooglePayScript() {
         window.addEventListener('google-pay-loaded', initGooglePay);
       }
     }
-  }, []);
+  }, [showButton]);
 
   return (
-    <Script
-      src="https://pay.google.com/gp/p/js/pay.js"
-      onLoad={() => {
-        window.dispatchEvent(new Event('google-pay-loaded'));
-      }}
-    />
+    <>
+      <Script
+        src="https://pay.google.com/gp/p/js/pay.js"
+        onLoad={() => {
+          window.dispatchEvent(new Event('google-pay-loaded'));
+        }}
+      />
+      {showButton && <div ref={buttonContainerRef} className="w-full mt-4" />}
+    </>
   );
 }
