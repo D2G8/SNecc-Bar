@@ -90,7 +90,7 @@ export default function LoginPage() {
               </button>
             </div>
             <div className="text-center text-xs text-muted-foreground mt-4">
-              <p>Demo: admin@necc.com / admin</p>
+              <p>Demo: admins@necc.com / admin</p>
             </div>
           </form>
         </CardContent>

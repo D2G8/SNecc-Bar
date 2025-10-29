@@ -127,7 +127,7 @@ export async function register(email: string, password: string, name: string): P
   if (!user) throw new Error('User creation failed')
 
   // Determine role based on email
-  const role = email === 'admin@necc.com' ? 'admin' : 'user'
+  const role = email === 'admins@necc.com' ? 'admin' : 'user'
   const balance = role === 'admin' ? 1000 : 0
 
   await supabase.from('users').insert({
